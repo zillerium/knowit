@@ -11,32 +11,49 @@ contract Knowit  {
  
     struct creatorRecord {
         string creatorName;
-        bytes32 hashCertificate;
+        string hashCertificate;
         bool exists;
     }
  
     struct video {
        string keyword;
-       bytes32 creatorRecord;
+       string creatorRecord;
        bool exists;
+       uint videoId; // temp fix due to string and bytes46 in ipfs - need to build proper index 
+                     // for addresses of videos in ipfs and an Id on the blockcgain.
     }
     
-    mapping(bytes32 => video) public videos; // hash of video in ipfs is the mapping
+   // mapping(bytes32 => video) public videos; // hash of video in ipfs is the mapping
     mapping(address => creatorRecord) public creatorRecords;// address is the wallet address of the video creator
- 
-    video[] videocats;
+  
+    video[] public videos;
+    
+    uint public currentVideo;
     
     function addVideo(string memory keyword,
                        address creatorAddress,
-                       bytes32 videoAddress // ipfs hash of video
+                       string memory videoAddress // ipfs hash of video
     ) public {
-        require (creatorRecord[creatorAddress].exists);  
-        require (!video[videoAddress].exists);    
-        videos[videoAddress].keyword=keyword;
-        videos[videoAddress].creatorRecord= creatorRecord[creatorAddress].hashCertificate;
-        videos.push(videoAddress);
+        uint myvideo = currentVideo++;
+       require (creatorRecords[creatorAddress].exists);  
+   //     require (currentVideo!=0 && !videos[myvideo].exists);  
+        currentVideo++;
+   //     video memory aVideo;
+//        aVideo.keyword = keyword;
+  //      aVideo.creatorRecord=creatorRecords[creatorAddress].hashCertificate;//
+//        aVideo.videoId = myvideo;
+  //      aVideo.exists = true;
+  string memory creatorId = creatorRecords[creatorAddress].hashCertificate;
+  
+   video memory aVideo = video(keyword, creatorId, true, myvideo);   
+    videos.push(aVideo);
+  
+ 
+ 
         
     }
+    
+    // sample wallet - 0x95fDb223FE47B91adCeaF3f69895C8A77a4435B3
     
     // QmefWxay2L9L59oNnt8Xg86PfB9URoDBcFS86HRNFf2Ew7 example certificate of a 
     // doctor's degree 
@@ -44,17 +61,17 @@ contract Knowit  {
     
     function addVideoCreator(address creatorAddress,
                        string memory creatorName,
-                       bytes32 certHashAddress
+                       string memory hashCertificate
     ) public {
-        require (!creatorRecord[creatorAddress].exists);
-        creatorRecord[creatorAddress].creatorName=creatorName;
-        creatorRecord[creatorAddress].hashCertificate=hashCertificate;
-        creatorRecord[creatorAddress].exists=true;
+        require (!creatorRecords[creatorAddress].exists);
+        creatorRecords[creatorAddress].creatorName=creatorName;
+        creatorRecords[creatorAddress].hashCertificate=hashCertificate;
+        creatorRecords[creatorAddress].exists=true;
     }
     
-    function getVideoCreatorId(address creatorAddress) view public returns (bytes32) {
-        require (creatorRecord[creatorAddress].exists);
-        return creatorRecord[creatorAddress].hashCertificate;
+    function getVideoCreatorId(address creatorAddress) view public returns (string memory) {
+        require (creatorRecords[creatorAddress].exists);
+        return creatorRecords[creatorAddress].hashCertificate;
     }
     
     
