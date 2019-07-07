@@ -4,29 +4,72 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
+
+	<script>
+    $( document ).ready(function() {
+    console.log( "ready!" );
+
+		if (typeof web3 !== 'undefined') {
+       web3 = new Web3(web3.currentProvider);
+   } else {
+       // set the provider you want from Web3.providers
+       web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+   }
+       // Our future code here..
+        web3.eth.defaultAccount = web3.eth.accounts[0];
+	var KnowitContract=web3.eth.contract([ { "constant": false, "inputs": [ { "name": "keyword", "type": "string" }, { "name": "creatorAddress", "type": "address" }, { "name": "videoAddress", "type": "string" } ], "name": "addVideo", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [ { "name": "creatorAddress", "type": "address" }, { "name": "creatorName", "type": "string" }, { "name": "hashCertificate", "type": "string" } ], "name": "addVideoCreator", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [ { "name": "", "type": "address" } ], "name": "creatorRecords", "outputs": [ { "name": "creatorName", "type": "string" }, { "name": "hashCertificate", "type": "string" }, { "name": "exists", "type": "bool" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "currentVideo", "outputs": [ { "name": "", "type": "uint256" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [ { "name": "creatorAddress", "type": "address" } ], "name": "getVideoCreatorId", "outputs": [ { "name": "", "type": "string" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [ { "name": "", "type": "uint256" } ], "name": "videos", "outputs": [ { "name": "keyword", "type": "string" }, { "name": "creatorRecord", "type": "string" }, { "name": "videoAddress", "type": "string" }, { "name": "exists", "type": "bool" }, { "name": "videoId", "type": "uint256" } ], "payable": false, "stateMutability": "view", "type": "function" } ]);
+        var aKnowitContract = KnowitContract.at('0x8440618a69eb575616b94f837b8a10cd7e233826');
+$("#btnShowMyVideos").click(function() {
+  var myvideos=0; // in the real app, we search to get video list
+  aKnowitContract.videos(myvideos , function(error, result){
+    if(!error) {
+        var videoaddress = result[2];
+	  var mylink=  document.getElementById("videolist");
+	    mylink.href="https://ipfs.io/ipfs/"+videoaddress;
+	    mylink.innerHTML=videoaddress;
+        console.log(result)
+      }
+    else
+        console.error(error);
+    });
+});});
+</script>
     <title>Know.it - education in the developing world </title>
   </head>
   <body>
-    <h1>Know.it</h1>
 <div class="row">
-  <div class="col-4">col-4</div>
-  <div class="col-4">col-4</div>
-  <div class="col-4">col-4</div>
+	  <div class="col-2"><img src="./knowitlogo.png" class="img-fluid" alt="Responsive image"></div>
+
+  <div class="col-2"><img src="./uniceflogo.png" class="img-fluid" alt="Responsive image"></div>
+  <div class="col-2"><img src="./whologo.png" class="img-fluid" alt="Responsive image"></div>
+  <div class="col-2"><img src="./unfpalogo.png" class="img-fluid" alt="Responsive image"></div>
+  <div class="col-2"><img src="./savechildrenlogo.png" class="img-fluid" alt="Responsive image"></div>
+  <div class="col-2"><img src="./figologo.png" class="img-fluid" alt="Responsive image"></div>
 </div>
-<div class="input-group">
-  <div class="input-group-prepend">
-    <span class="input-group-text" id="inputGroupFileAddon01">Upload</span>
-  </div>
-  <div class="custom-file">
-    <input type="file" class="custom-file-input" id="inputGroupFile01"
-      aria-describedby="inputGroupFileAddon01">
-    <label class="custom-file-label" for="inputGroupFile01">Choose file</label>
+
+<div class="row">
+    <div class="col-12">
+         <button type="button" class="btn btn-default" id="btnShowMyVideos">Show My Videos</button>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+	    <div class="card" style="width: 18rem;">
+  <img src="./videolink.jpg" class="card-img-top" alt="...">
+  <div class="card-body">
+    <h5 class="card-title"> Video</h5>
+    <p class="card-text"> Video</p>
+    <a href="#" id="videolist" class="btn btn-primary stretched-link">Video</a>
   </div>
 </div>
+    </div>
+</div>
+
 <div class="input-group">
   <div class="input-group-prepend">
     <span class="input-group-text" id="inputGroupFileAddon01">Upload</span>
